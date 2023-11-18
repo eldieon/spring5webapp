@@ -9,6 +9,13 @@ import guru.springframework.spring5webapp.repositories.PublisherRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static java.lang.System.*;
+
 @Component
 public class BootStrapData implements CommandLineRunner {
     private final AuthorRepository authorRepository;
@@ -24,26 +31,35 @@ public class BootStrapData implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
+        Publisher oreiley = new Publisher();
+        oreiley.setName("oreiley");
+        oreiley.setCity("milwaulkee");
+        oreiley.setZip("somezip");
         Author eric = new Author("Eric", "Evans");
         Book ddd = new Book("Domain Driven Design", "123123");
+
+        publisherRepository.save(oreiley);
+
         eric.getBooks().add(ddd);
         ddd.getAuthors().add(eric);
+        ddd.setPublisher(oreiley);
+        oreiley.getBooks().add(ddd);
 
         authorRepository.save(eric);
         bookRepository.save(ddd);
+        publisherRepository.save(oreiley);
+
 
         Author rod = new Author("Rod", "Johnson");
         Book noEJB = new Book("J2EE Development without EJB", "3939459459");
         rod.getBooks().add(noEJB);
         noEJB.getAuthors().add(rod);
+        noEJB.setPublisher(oreiley);
+        oreiley.getBooks().add(noEJB);
 
         authorRepository.save(rod);
         bookRepository.save(noEJB);
 
-        Publisher oreiley = new Publisher("oreiley", "main street", "somwehere", "somewhere else", "zip");
-        publisherRepository.save(oreiley);
-
-        System.out.println("publisher added : " + publisherRepository.findAll().iterator().next().toString());
         System.out.println("number of books : " + bookRepository.count() );
     }
 }
